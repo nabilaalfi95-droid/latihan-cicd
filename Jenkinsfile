@@ -1,19 +1,26 @@
 pipeline {
     agent any
+    options {
+        skipDefaultCheckout()
+    }
     stages {
-        stage('Build') {
+        stage('Checkout') {
             steps {
-                echo 'Menjalankan tahap Build...'
+                checkout scm
+                sh 'ls -la public'
             }
         }
         stage('Test') {
             steps {
-                echo 'Menjalankan tahap Testing...'
+                sh 'test -f public/index.html'
+                sh 'grep -qi "<html" public/index.html'
+                sh 'grep -qi "</html>" public/index.html'
+                sh 'grep -qi "<title>" public/index.html'
             }
         }
         stage('Deploy') {
             steps {
-                echo 'Menjalankan tahap Deploy ke server...'
+                sh 'cp -r public/* /var/www/html/'
             }
         }
     }
